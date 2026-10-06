@@ -8,7 +8,8 @@ help: ## List targets
 
 .PHONY: install
 install: ## Build and install woops + workspaceops-mcp
-	$(CARGO) install --path . --locked --force
+	$(CARGO) install --path . --bin woops --locked --force
+	$(CARGO) install --path . --bin workspaceops-mcp --locked --force
 
 .PHONY: test
 test: ## Run tests
