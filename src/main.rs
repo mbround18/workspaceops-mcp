@@ -16,7 +16,7 @@ use workspaceops::{
 };
 
 #[derive(Debug, Parser)]
-#[command(name = "workspaceops", version)]
+#[command(name = "woops", version)]
 struct Cli {
     /// Directories to link into the workspace session.
     #[arg(value_name = "DIR", num_args = 0..)]
@@ -45,7 +45,7 @@ struct Cli {
 
 fn main() {
     if let Err(err) = run() {
-        eprintln!("workspaceops error: {err:#}");
+        eprintln!("woops error: {err:#}");
         std::process::exit(1);
     }
 }

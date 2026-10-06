@@ -1,6 +1,6 @@
 # workspaceops
 
-`workspaceops` creates a managed workspace session under `~/.workspaces/*`, symlinks target directories into it, launches your chosen coding agent CLI, and cleans up the session directory automatically when you exit (including Ctrl+C).
+`woops` creates a managed workspace session under `~/.workspaces/*`, symlinks target directories into it, launches your chosen coding agent CLI, and cleans up the session directory automatically when you exit (including Ctrl+C).
 The repository also ships `workspaceops-mcp`, an MCP server exposing workspace inventory/prepare/cleanup tools over stdio.
 
 ## Install
@@ -18,7 +18,7 @@ cargo run --bin workspaceops-mcp
 ## Usage
 
 ```bash
-workspaceops [DIR ...] [--agent claude]
+woops [DIR ...] [--agent claude]
 ```
 
 ### Behavior

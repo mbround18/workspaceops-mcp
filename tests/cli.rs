@@ -2,14 +2,14 @@ use std::process::{Command, Stdio};
 
 #[test]
 fn help_prints_usage_and_agent_flag() {
-    let output = Command::new(env!("CARGO_BIN_EXE_workspaceops"))
+    let output = Command::new(env!("CARGO_BIN_EXE_woops"))
         .arg("--help")
         .stdin(Stdio::null())
         .output()
-        .expect("spawn workspaceops");
+        .expect("spawn woops");
     assert!(output.status.success());
     let stdout = String::from_utf8_lossy(&output.stdout);
-    assert!(stdout.contains("Usage: workspaceops"), "{stdout}");
+    assert!(stdout.contains("Usage: woops"), "{stdout}");
     assert!(stdout.contains("--agent"), "{stdout}");
 }
 
@@ -21,7 +21,7 @@ fn no_launch_mode_creates_then_cleans_workspace() {
     let linked_dir = tmp.path().join("ThunderForgeVTT-levels");
     std::fs::create_dir(&linked_dir).unwrap();
 
-    let output = Command::new(env!("CARGO_BIN_EXE_workspaceops"))
+    let output = Command::new(env!("CARGO_BIN_EXE_woops"))
         .arg("--no-launch")
         .arg("--agent")
         .arg("claude")
@@ -31,7 +31,7 @@ fn no_launch_mode_creates_then_cleans_workspace() {
         .current_dir(tmp.path())
         .stdin(Stdio::null())
         .output()
-        .expect("spawn workspaceops");
+        .expect("spawn woops");
 
     assert!(
         output.status.success(),
