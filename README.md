@@ -26,7 +26,9 @@ woops [DIR ...] [--agent claude]
 - Prints `woops lol` on startup.
 - If `DIR ...` is omitted, discovers sibling directories matching `--prefix` (default `ThunderForgeVTT`).
 - Creates links in a new session directory under `--root` (default `~/.workspaces`).
-- Seeds an `AGENTS.md` in the session directory explaining that it is ephemeral/disposable and listing each linked item with its `llm.txt` path (or missing status).
+- Seeds an `AGENTS.md` in the session directory explaining that it is ephemeral/disposable and listing each linked item with guidance-file hints:
+  - prefers `llm.txt`
+  - if missing, falls back to repo-root `AGENTS.md` / `CLAUDE.md` / `README.md` (case-insensitive variants)
 - Launches the single agent command from `--agent`.
 - On Ctrl+C, terminates the launched agent process and removes the session directory.
 

@@ -102,7 +102,7 @@ fn write_agents_md(session: &WorkspaceSession) -> Result<()> {
     body.push_str(
         "- Tools like graphify are fine to run, but treat this workspace as disposable.\n\n",
     );
-    body.push_str("## Linked items and llm.txt hints\n\n");
+    body.push_str("## Linked items and guidance file hints\n\n");
     if session.linked_dirs.is_empty() {
         body.push_str("_No linked items._\n");
     } else {
@@ -111,12 +111,28 @@ fn write_agents_md(session: &WorkspaceSession) -> Result<()> {
                 .file_name()
                 .and_then(|n| n.to_str())
                 .unwrap_or("(unknown)");
+            body.push_str(&format!("- `{name}`\n"));
             let llm = linked.join("llm.txt");
             if llm.exists() {
-                body.push_str(&format!("- `{name}`\n  - `llm.txt`: `{}`\n", llm.display()));
+                body.push_str(&format!("  - `llm.txt`: `{}`\n", llm.display()));
+            } else if let Some(fallback) = first_existing(
+                linked,
+                &[
+                    "AGENTS.md",
+                    "agents.md",
+                    "CLAUDE.md",
+                    "claude.md",
+                    "README.md",
+                    "readme.md",
+                ],
+            ) {
+                body.push_str(&format!(
+                    "  - `llm.txt`: _(not found)_\n  - fallback: `{}`\n",
+                    fallback.display()
+                ));
             } else {
                 body.push_str(&format!(
-                    "- `{name}`\n  - `llm.txt`: _(not found at `{}`)_\n",
+                    "  - `llm.txt`: _(not found at `{}`)_\n  - fallback: _(none found: AGENTS.md / CLAUDE.md / README.md)_\n",
                     llm.display()
                 ));
             }
@@ -125,6 +141,13 @@ fn write_agents_md(session: &WorkspaceSession) -> Result<()> {
     fs::write(session.session_dir.join("AGENTS.md"), body)
         .context("failed writing AGENTS.md into workspace session")?;
     Ok(())
+}
+
+fn first_existing(root: &std::path::Path, candidates: &[&str]) -> Option<PathBuf> {
+    candidates
+        .iter()
+        .map(|name| root.join(name))
+        .find(|path| path.exists())
 }
 
 fn run_agent_until_exit(session: &WorkspaceSession, agent: &str) -> Result<()> {
