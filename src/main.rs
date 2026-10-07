@@ -1,4 +1,5 @@
 use std::{
+    fs,
     path::PathBuf,
     process::{Command, Stdio},
     sync::{
@@ -69,6 +70,7 @@ fn run() -> Result<()> {
 
     let root = cli.root.unwrap_or(default_workspace_root()?);
     let session = create_workspace_session(&root, &dirs)?;
+    write_agents_md(&session)?;
     println!("workspace: {}", session.session_dir.display());
     for linked in &session.linked_dirs {
         println!("linked: {}", linked.display());
@@ -88,6 +90,41 @@ fn run() -> Result<()> {
     }
 
     outcome
+}
+
+fn write_agents_md(session: &WorkspaceSession) -> Result<()> {
+    let mut body = String::new();
+    body.push_str("# AGENTS.md\n\n");
+    body.push_str("This is an ephemeral workspace created by `woops`.\n\n");
+    body.push_str("- This session folder will be removed when the session ends unless `--keep-on-exit` is used.\n");
+    body.push_str("- Do not store important files here.\n");
+    body.push_str("- Use this directory as quick access to relevant project material.\n");
+    body.push_str(
+        "- Tools like graphify are fine to run, but treat this workspace as disposable.\n\n",
+    );
+    body.push_str("## Linked items and llm.txt hints\n\n");
+    if session.linked_dirs.is_empty() {
+        body.push_str("_No linked items._\n");
+    } else {
+        for linked in &session.linked_dirs {
+            let name = linked
+                .file_name()
+                .and_then(|n| n.to_str())
+                .unwrap_or("(unknown)");
+            let llm = linked.join("llm.txt");
+            if llm.exists() {
+                body.push_str(&format!("- `{name}`\n  - `llm.txt`: `{}`\n", llm.display()));
+            } else {
+                body.push_str(&format!(
+                    "- `{name}`\n  - `llm.txt`: _(not found at `{}`)_\n",
+                    llm.display()
+                ));
+            }
+        }
+    }
+    fs::write(session.session_dir.join("AGENTS.md"), body)
+        .context("failed writing AGENTS.md into workspace session")?;
+    Ok(())
 }
 
 fn run_agent_until_exit(session: &WorkspaceSession, agent: &str) -> Result<()> {
